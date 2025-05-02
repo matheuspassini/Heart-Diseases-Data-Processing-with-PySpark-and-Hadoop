@@ -1,5 +1,4 @@
 version: '3.8'
-#name: dsa-data-lake
 
 services:
   data-lake-master:
@@ -23,7 +22,7 @@ services:
 
   data-lake-history-server:
     container_name: historyserver
-    image: dsa-data-lake-image
+    image: data-lake-image
     entrypoint: ['./entrypoint.sh', 'history']
     depends_on:
       - data-lake-master

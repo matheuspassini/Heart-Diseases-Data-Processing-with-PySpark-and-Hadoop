@@ -31,9 +31,9 @@ RUN curl https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz
 
 FROM spark-base as pyspark
 
-#RUN pip3 install --upgrade pip
-#COPY requirements/requirements.txt .
-#RUN pip3 install -r requirements.txt
+RUN pip3 install --upgrade pip
+COPY requirements/requirements.txt .
+RUN pip3 install -r requirements.txt
 
 ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
 

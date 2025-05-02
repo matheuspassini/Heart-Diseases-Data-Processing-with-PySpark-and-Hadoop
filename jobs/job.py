@@ -13,7 +13,7 @@ df_medical = df_medical.toDF(*column_names)
 
 df_medical_by_blood_pressure = (
     df_medical.select("heart_disease", "blood_pressure")
-      .filter(df["heart_disease"] == 1)
+      .filter(df_medical["heart_disease"] == 1)
       .groupBy("blood_pressure")
       .count()
       .withColumnRenamed("count","top_amount_heart_diseased_patients")
