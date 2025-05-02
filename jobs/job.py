@@ -28,9 +28,6 @@ df_medical_by_age = (
       .orderBy("age", ascending=True)
 )
 
-df_medical_by_blood_pressure.write().overwrite().save("hdfs:///opt/spark/data/")
-df_medical_by_age.write().overwrite().save("hdfs:///opt/spark/data/")
-
 df_medical_by_blood_pressure.write.csv("hdfs:///opt/spark/data/distribution_blood_pressure", mode="overwrite")
 df_medical_by_age.write.csv("hdfs:///opt/spark/data/distribution_age", mode="overwrite")
 

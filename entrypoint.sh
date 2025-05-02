@@ -31,7 +31,7 @@ then
 
   hdfs --daemon start datanode
   yarn --daemon start nodemanager
-  
+
 fi
 
 tail -f /dev/null
