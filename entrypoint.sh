@@ -14,17 +14,14 @@ then
   hdfs --daemon start secondarynamenode
   yarn --daemon start resourcemanager
 
-  while ! hdfs dfs -mkdir -p /data-lake-logs;
-  do
-    echo "Fail to create data-lake-logs/ on HDFS"
-  done
-  
-  echo "Success to create data-lake-logs/ on HDFS"
   hdfs dfs -mkdir -p /opt/spark/data
-  echo "Folder /opt/spark/data created on HDFS"
+  hdfs dfs -mkdir -p /opt/spark/data/raw_layer
+  hdfs dfs -mkdir -p /opt/spark/data/processed_layer
+  hdfs dfs -mkdir -p /opt/spark/data/lineage_layer
 
-  hdfs dfs -copyFromLocal /opt/spark/data/* /opt/spark/data
-  hdfs dfs -ls /opt/spark/data
+  echo "Data folders created on HDFS"
+
+  hdfs dfs -copyFromLocal /opt/spark/data/* /opt/spark/data/raw_layer
 
 elif [ "$SPARK_WORKLOAD" == "worker" ];
 then
