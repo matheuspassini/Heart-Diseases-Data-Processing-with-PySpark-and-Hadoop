@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye as spark-base
+FROM python:3.11-bullseye AS spark-base
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -29,7 +29,7 @@ RUN curl https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz
  && tar xfz hadoop-3.4.0.tar.gz --directory /opt/hadoop --strip-components 1 \
  && rm -rf hadoop-3.4.0.tar.gz
 
-FROM spark-base as pyspark
+FROM spark-base AS pyspark
 
 RUN pip3 install --upgrade pip
 COPY requirements/requirements.txt .
@@ -42,9 +42,9 @@ ENV PATH="$HADOOP_HOME/bin:$HADOOP_HOME/sbin:${PATH}"
 ENV PATH="${PATH}:${JAVA_HOME}/bin"
 
 ENV SPARK_MASTER="spark://master:7077"
-ENV SPARK_MASTER_HOST master
-ENV SPARK_MASTER_PORT 7077
-ENV PYSPARK_PYTHON python3
+ENV SPARK_MASTER_HOST="master"
+ENV SPARK_MASTER_PORT="7077"
+ENV PYSPARK_PYTHON="python3"
 ENV HADOOP_CONF_DIR="$HADOOP_HOME/etc/hadoop"
 
 ENV LD_LIBRARY_PATH="$HADOOP_HOME/lib/native:${LD_LIBRARY_PATH}"

@@ -1,9 +1,16 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import when
+import hashlib
+from datetime import datetime
+import json
+
+file_to_read = "hdfs:///opt/spark/data/raw_layer/medical-data.csv"
+file_to_write = "hdfs:///opt/spark/data/processed_layer"
+file_lineage = "hdfs:///opt/spark/data/lineage_layer"
 
 spark = SparkSession.builder.appName("Data-Lake-Cleaning-Room").getOrCreate()
 
-df = spark.read.csv("hdfs:///opt/spark/data/raw_layer/medical-data.csv", inferSchema=True, header=False)
+df = spark.read.csv(file_to_read, inferSchema=True, header=False)
 
 column_names = ["id", "age", "gender", "blood_pressure", "cholesterol", "glycemic",
                 "cardiogram", "heartbeat", "heart_disease"]
@@ -31,4 +38,29 @@ df = df.withColumn(df.columns[8],
       .when(df[df.columns[8]] == 1, 'Yes')
       .otherwise(df[df.columns[8]]))
 
-df.write.csv("hdfs:///opt/spark/data/processed_layer", mode="overwrite", header=True)
+
+df.write.csv(file_to_write, mode="overwrite", header=True)
+
+def hash_files(file_name):
+    df = spark.read.csv(file_name, inferSchema=True, header=False)
+
+    file_str = df.rdd.map(lambda row: ",".join(map(str, row))).collect()
+
+    file_str = "\n".join(file_str)
+    sha256_hash = hashlib.sha256(file_str.encode('utf-8'))
+
+    return sha256_hash.hexdigest()
+
+
+hash_original = hash_files(file_to_read)
+
+lineage = {
+    'timestamp': datetime.utcnow().isoformat(),
+    'source_file': file_to_read,
+    'hash': hash_original,
+    'transformations': 'Numbers to strings',
+    'file_target': file_to_write
+}
+
+data_lineage = spark.read.json(spark.sparkContext.parallelize([json.dumps(lineage)]))
+data_lineage.write.mode("overwrite").json(file_lineage)

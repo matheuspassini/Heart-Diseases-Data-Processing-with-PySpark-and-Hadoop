@@ -18,6 +18,7 @@ then
   hdfs dfs -mkdir -p /opt/spark/data/raw_layer
   hdfs dfs -mkdir -p /opt/spark/data/processed_layer
   hdfs dfs -mkdir -p /opt/spark/data/lineage_layer
+  hdfs dfs -mkdir -p /data-lake-logs
 
   echo "Data folders created on HDFS"
 
@@ -28,6 +29,18 @@ then
 
   hdfs --daemon start datanode
   yarn --daemon start nodemanager
+
+elif [ "$SPARK_WORKLOAD" == "history" ];
+then
+
+  while ! hdfs dfs -test -d /data-lake-logs;
+  do
+    echo "spark-logs não existe ainda...criando"
+    sleep 1;
+  done
+  echo "Exit loop"
+
+  start-history-server.sh
 
 fi
 
