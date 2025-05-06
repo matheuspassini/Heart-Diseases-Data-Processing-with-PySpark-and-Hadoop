@@ -85,3 +85,54 @@ The Python script executed by Spark performs the following high-level steps to t
 | glycemic       | 0, 1             | 0 → Normal, 1 → High        |
 | cardiogram     | 0, 1, 2          | 0 → Normal, 1 → Some anomaly, 2 → Present anomaly |
 | heart_disease  | 0, 1             | 0 → No, 1 → Yes             |
+
+# Diagram
+
+```mermaid
+flowchart TB
+    subgraph "External Access"
+        SSH[SSH Connection] --> Docker
+    end
+
+    subgraph "Docker Environment"
+        Docker[Docker Container]
+        Docker --> HDFS
+        Docker --> Spark
+    end
+
+    subgraph "HDFS Architecture"
+        HDFS[Hadoop Distributed File System]
+        
+        subgraph "NameNode"
+            NN[NameNode]
+            NN -->|Metadata| DN1
+            NN -->|Metadata| DN2
+        end
+
+        subgraph "DataNodes"
+            DN1[DataNode 1]
+            DN2[DataNode 2]
+        end
+
+        subgraph "Data Lake Layers"
+            Raw[Raw Layer\medical-data.csv]
+            Processed[Processed Layer]
+            Lineage[Lineage Layer]
+        end
+    end
+
+    subgraph "Data Processing"
+        Spark[Apache Spark]
+        Transform[transform.py]
+        Spark --> Transform
+        Transform -->|Read| Raw
+        Transform -->|Write| Processed
+        Transform -->|Metadata| Lineage
+    end
+
+    style SSH fill:#2d2d2d,stroke:#666,stroke-width:2px,color:#fff
+    style Docker fill:#3d3d3d,stroke:#666,stroke-width:2px,color:#fff
+    style HDFS fill:#4d4d4d,stroke:#666,stroke-width:2px,color:#fff
+    style Spark fill:#5d5d5d,stroke:#666,stroke-width:2px,color:#fff
+    style Transform fill:#6d6d6d,stroke:#666,stroke-width:2px,color:#fff
+```
